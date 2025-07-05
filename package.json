@@ -1,4 +1,11 @@
 {
+  "name": "veggify-fullstack",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "start": "node backend/index.js"
+  },
   "dependencies": {
     "dotenv": "^17.0.1"
   }
