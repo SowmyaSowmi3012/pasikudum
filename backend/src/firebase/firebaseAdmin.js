@@ -1,12 +1,15 @@
 const admin = require("firebase-admin");
-const path = require("path");
-require("dotenv").config();
+require("dotenv").config();           // safe even if already called
 
-// Set the path to the credentials if not set already
-process.env.GOOGLE_APPLICATION_CREDENTIALS = process.env.GOOGLE_APPLICATION_CREDENTIALS || './secure/pasikudu.json';
+let serviceAccount;
 
-// Load the service account key
-const serviceAccount = require(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+if (process.env.FIREBASE_CONFIG) {
+  // coming from an env‑var (Render / local)
+  serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+} else {
+  // fallback to a local file for dev convenience
+  serviceAccount = require("../firebase/pasikudu.json");
+}
 
 if (!admin.apps.length) {
   admin.initializeApp({
