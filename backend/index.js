@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const admin = require('./src/firebase/firebaseAdmin');
+require('dotenv').config({ path: '../.env' });
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -10,7 +11,7 @@ const categoryRoute = require("./src/routes/categoryRoute");
 // MongoDB connection
 async function main() {
   await mongoose.connect(
-    'mongodb+srv://sowmisowmya402:31JVK5t2WwF3MFqE@veggify.sehpsw7.mongodb.net/veggify?retryWrites=true&w=majority&appName=veggify'
+    process.env.MONGODB_URI,
   );
 }
 main()

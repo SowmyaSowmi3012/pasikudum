@@ -1,15 +1,16 @@
 const express = require('express');
-const route =express.Router();
+const router = express.Router();
 
-const ItemController = require("../controllers/itemController");
+// ✅ Destructure the named exports from the controller
+const {
+  getAllItems,
+  getSearchedItems,
+  getSingleItems
+} = require('../controllers/ItemController');
 
+// 🛠 Define the routes with proper handlers
+router.get('/all-items', getAllItems);
+router.get('/search', getSearchedItems);
+router.get('/item/:id', getSingleItems);
 
-
-route.get("/all-items", ItemController.getAllItems)
-route.get("/items" , ItemController.getSeachedItems)
-route.get("/items/:id", ItemController.getSingleItems)
-
-
-//https://demo-vegi-backend.vercel.app/api/all-items
-
-module.exports=route;
+module.exports = router;

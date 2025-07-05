@@ -1,14 +1,20 @@
 const admin = require("firebase-admin");
-require("dotenv").config();           // safe even if already called
+const fs = require("fs");
+const path = require("path");
+require('dotenv').config({ path: '../../../.env' });         // must come first
 
 let serviceAccount;
 
 if (process.env.FIREBASE_CONFIG) {
-  // coming from an env‑var (Render / local)
+  // one‑line JSON in env var
   serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 } else {
-  // fallback to a local file for dev convenience
-  serviceAccount = require("../firebase/pasikudu.json");
+  // ① try env‑var path, ② else default to ./secure/pasikudu.json
+  const keyPath =
+    process.env.FIREBASE_CONFIG_PATH ||
+    path.resolve(__dirname, "../../../secure/pasikudu.json");
+
+  serviceAccount = JSON.parse(fs.readFileSync(keyPath, "utf-8"));
 }
 
 if (!admin.apps.length) {
