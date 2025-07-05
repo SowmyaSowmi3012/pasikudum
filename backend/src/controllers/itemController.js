@@ -1,4 +1,4 @@
-const Item = require("../model/ItemModel");
+const Item = require("../model/ItemModel")
 
 const getAllItems = async (req, res) => {
   try {
@@ -9,38 +9,30 @@ const getAllItems = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch items" });
   }
 };
-
-const getSearchedItems = async (req, res) => {
-  const { q } = req.query;
-  try {
-    if (!q) {
-      return res.status(400).json({ message: "Search query missing" });
+const getSeachedItems = async (req,res) =>{
+    const {q}=req.query;
+    try{
+        let items ;
+        if(q){
+            items=await Item.find({name:{$regex:q, $options :'i'}})
+        }
+        res.json(items);
+    } catch(error){
+        res.status(500).json({message:"no iTem found !"})
     }
+}
 
-    const items = await Item.find({ name: { $regex: q, $options: 'i' } });
-    res.json(items);
-  } catch (error) {
-    console.error("getSearchedItems error →", error.message);
-    res.status(500).json({ message: "Failed to search items" });
-  }
-};
-
-const getSingleItems = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const item = await Item.findById(id);
-    if (!item) {
-      return res.status(404).json({ message: "Item not found" });
+const getSingleItems = async(req,res)=>{
+    const {id} = req.params;
+    try{
+      const item = await Item.findById(id);
+      res.json(item)
+    } catch(error){
+        res.status(500).json({message:"no iTem found !"})
     }
-    res.json(item);
-  } catch (error) {
-    console.error("getSingleItems error →", error.message);
-    res.status(500).json({ message: "Error fetching item" });
-  }
-};
+}
 
 module.exports = {
-  getAllItems,
-  getSearchedItems,
-  getSingleItems,
+  getAllItems,  getSeachedItems,
+    getSingleItems
 };
