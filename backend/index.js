@@ -5,7 +5,7 @@ const admin = require('./src/firebase/firebaseAdmin');
 require('dotenv').config({ path: '../.env' });
 const app = express();
 const port = process.env.PORT || 5000;
-const itemRoutes = require('./src/routes/ItemRoute');
+const itemRoutes = require('./src/routes/itemRoute');
 const categoryRoute = require("./src/routes/categoryRoute");
 // MongoDB connection
 async function main() {
