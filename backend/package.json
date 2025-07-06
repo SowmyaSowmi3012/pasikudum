@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
- "scripts": {
+"scripts": {
   "start": "node index.js",
-  "build": "echo 'Nothing to build for backend'"
+  "dev": "nodemon index.js"
 },
   "keywords": [],
   "author": "",
