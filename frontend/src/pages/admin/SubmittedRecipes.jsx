@@ -38,7 +38,7 @@ const SubmittedRecipes = () => {
 
   const rejectRecipe = async (id) => {
     try {
-      await axios.delete(`${BASE_URL}/api/admin/reject/${id}`);
+      await axios.delete(`${BASE_URL}/api/admin/recipe/${id}`);
       alert("❌ Recipe rejected.");
       fetchSubmissions();
       setSelected(null);
