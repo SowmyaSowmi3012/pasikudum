@@ -4,21 +4,31 @@ import { Link } from "react-router-dom";
 import Card from "../../components/Card";
 import { useAuth } from "../../context/AuthContext";
 
-const LatestRecipe = () => {
-  const { user } = useAuth();           // ✅ get firebase user
-  const [items, setItems] = useState([]);
-  const [savedIds, setSavedIds] = useState([]); // ✅ track saved recipe IDs
+const BASE_URL = "https://pasikudum-backend.onrender.com"; // ✅ production URL
 
-  /* ───── Fetch latest recipes (first 4) ───── */
+const LatestRecipe = () => {
+  const { user } = useAuth();
+  const [items, setItems] = useState([]);
+  const [savedIds, setSavedIds] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch latest 4 recipes
   useEffect(() => {
     const fetchItems = async () => {
-      const res = await axios.get("http://localhost:5000/api/all-items");
-      setItems(res.data.slice(0, 4)); // keep only first 4 for “latest”
+      try {
+        const res = await axios.get(`${BASE_URL}/api/all-items`);
+        setItems(res.data.slice(0, 4));
+      } catch (error) {
+        console.error("Error fetching latest items", error);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchItems();
   }, []);
 
-  /* ───── Fetch saved IDs when user logs in/out ───── */
+  // ✅ Fetch saved recipe IDs for current user
   useEffect(() => {
     if (!user) {
       setSavedIds([]);
@@ -27,9 +37,7 @@ const LatestRecipe = () => {
 
     const fetchSaved = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/saved?uid=${user.uid}`
-        );
+        const res = await axios.get(`${BASE_URL}/api/saved?uid=${user.uid}`);
         const ids = res.data.map((doc) => doc.recipeId);
         setSavedIds(ids);
       } catch (err) {
@@ -40,25 +48,21 @@ const LatestRecipe = () => {
     fetchSaved();
   }, [user]);
 
-  /* ───── Toggle save / unsave ───── */
+  // ✅ Save or unsave recipe
   const handleToggleSave = async (recipe) => {
     if (!user) {
       alert("Please log in to save recipes!");
       return;
     }
 
-    const already = savedIds.includes(recipe._id);
+    const alreadySaved = savedIds.includes(recipe._id);
 
     try {
-      if (already) {
-        // Unsave
-        await axios.delete(
-          `http://localhost:5000/api/saved?uid=${user.uid}&recipeId=${recipe._id}`
-        );
+      if (alreadySaved) {
+        await axios.delete(`${BASE_URL}/api/saved?uid=${user.uid}&recipeId=${recipe._id}`);
         setSavedIds((prev) => prev.filter((id) => id !== recipe._id));
       } else {
-        // Save
-        await axios.post("http://localhost:5000/api/saved", {
+        await axios.post(`${BASE_URL}/api/saved`, {
           uid: user.uid,
           recipeId: recipe._id,
           title: recipe.name,
@@ -67,7 +71,7 @@ const LatestRecipe = () => {
         setSavedIds((prev) => [...prev, recipe._id]);
       }
     } catch (err) {
-      console.error("Save/unsave failed", err);
+      console.error("Error while saving/unsaving recipe", err);
     }
   };
 
@@ -78,7 +82,9 @@ const LatestRecipe = () => {
       </h2>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {items.length ? (
+        {loading ? (
+          <p className="col-span-full text-center">Loading…</p>
+        ) : (
           items.map((item) => (
             <Card
               key={item._id}
@@ -87,8 +93,6 @@ const LatestRecipe = () => {
               onToggleSave={() => handleToggleSave(item)}
             />
           ))
-        ) : (
-          <p>Loading…</p>
         )}
       </div>
 
