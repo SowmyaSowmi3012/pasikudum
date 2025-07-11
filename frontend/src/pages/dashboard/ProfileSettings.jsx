@@ -3,6 +3,7 @@ import axios from "axios";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const auth = getAuth();
+const BASE_URL = "https://pasikudum-backend.onrender.com";
 
 const tasteOptions = ["Spicy", "Sweet", "Savory", "Umami", "Mild", "Sour"];
 const dietaryOptions = ["Vegan", "Vegetarian", "Gluten-Free", "Dairy-Free", "Keto"];
@@ -23,9 +24,10 @@ const ProfileSettings = () => {
       if (user) {
         setUserId(user.uid);
 
-      axios.get(`http://localhost:5000/api/users/${user.uid}`)
-          .then(res => setProfile(res.data))
-          .catch(err => console.error("Failed to load user", err))
+        axios
+          .get(`${BASE_URL}/api/users/${user.uid}`)
+          .then((res) => setProfile(res.data))
+          .catch((err) => console.error("Failed to load user", err))
           .finally(() => setLoading(false));
       } else {
         setLoading(false);
@@ -54,7 +56,7 @@ const ProfileSettings = () => {
     if (!userId) return alert("User not authenticated");
 
     try {
-      await axios.put(`http://localhost:5000/api/users/${userId}`, profile);
+      await axios.put(`${BASE_URL}/api/users/${userId}`, profile);
       alert("Profile updated!");
     } catch (err) {
       console.error("Failed to update profile", err);
@@ -87,7 +89,9 @@ const ProfileSettings = () => {
                 <input
                   type="checkbox"
                   checked={profile.tastePreferences.includes(taste)}
-                  onChange={() => handleCheckboxChange("tastePreferences", taste)}
+                  onChange={() =>
+                    handleCheckboxChange("tastePreferences", taste)
+                  }
                 />
                 {taste}
               </label>
@@ -103,7 +107,9 @@ const ProfileSettings = () => {
                 <input
                   type="checkbox"
                   checked={profile.dietaryRestrictions.includes(option)}
-                  onChange={() => handleCheckboxChange("dietaryRestrictions", option)}
+                  onChange={() =>
+                    handleCheckboxChange("dietaryRestrictions", option)
+                  }
                 />
                 {option}
               </label>
