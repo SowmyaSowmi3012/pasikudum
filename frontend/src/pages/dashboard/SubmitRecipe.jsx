@@ -57,7 +57,7 @@ const SubmitRecipe = () => {
     };
 
     try {
-      const res = await axios.post("http://localhost:5000/api/submit-recipe", recipeData);
+      const res = await axios.post("https://pasikudum-backend.onrender.com/api/submit-recipe", recipeData);
       setStatus("✅ Recipe sent! An admin will review it.");
 
       // Reset form
