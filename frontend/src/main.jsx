@@ -53,7 +53,8 @@ const router = createBrowserRouter([
         path:'/items/:id',
         element:<SingleProduct></SingleProduct>,
        loader: ({ params }) =>
-          fetch(`http://localhost:5000/api/items/${params.id}`),
+  fetch(`https://pasikudum-backend.onrender.com/api/items/${params.id}`),
+
       },
       {
         path:'/recipes',
