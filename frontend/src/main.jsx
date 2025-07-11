@@ -50,12 +50,12 @@ const router = createBrowserRouter([
         element: <Search />,
       },
        {
-        path:'/items/:id',
-        element:<SingleProduct></SingleProduct>,
-       loader: ({ params }) =>
-  fetch(`https://pasikudum-backend.onrender.com/api/items/${params.id}`),
+  path: '/items/:id',
+  element: <SingleProduct />,
+  loader: ({ params }) =>
+    fetch(`https://pasikudum-backend.onrender.com/api/items/${params.id}`),
+},
 
-      },
       {
         path:'/recipes',
         element:<Recipes></Recipes>
