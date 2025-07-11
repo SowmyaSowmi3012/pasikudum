@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const BASE_URL = "https://pasikudum-backend.onrender.com";
+
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
 
- useEffect(() => {
-  axios.get("http://localhost:5000/api/users")
-    .then(res => {
-      setUsers(res.data);
-      console.log("Fetched users:", res.data);
+  useEffect(() => {
+    axios.get(`${BASE_URL}/api/users`)
+      .then(res => {
+        setUsers(res.data);
+        console.log("✅ Fetched users:", res.data);
+      })
+      .catch(err => console.error("Error fetching users:", err));
+  }, []);
 
-      // Log each user clearly
-      res.data.forEach(user => {
-        console.log("User:", JSON.stringify(user, null, 2));
-      });
-    })
-    .catch(err => console.log("Error fetching users:", err));
-}, []);
-  // Helper: Format createdAt from Firestore Timestamp or string
-const getFormattedDate = (createdAt) => {
-  if (!createdAt) return "N/A";
-
-  const date = new Date(createdAt);
-  return isNaN(date) ? "Invalid Date" : date.toLocaleString();
-};
+  // Helper: Format createdAt date safely
+  const getFormattedDate = (createdAt) => {
+    if (!createdAt) return "N/A";
+    const date = new Date(createdAt);
+    return isNaN(date) ? "Invalid Date" : date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+  };
 
   return (
     <div className="p-10 min-h-screen">
@@ -42,29 +43,19 @@ const getFormattedDate = (createdAt) => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => {
-                console.log("User object:", user); // For debugging
-
-                return (
-                  <tr key={user.uid || user.id} className="border-b hover:bg-gray-50">
-                    <td className="p-3 text-gray-800">
-                      {user.name || user.displayName || "N/A"}
-                    </td>
-                    <td className="p-3 text-gray-800">
-                      {user.email || "N/A"}
-                    </td>
-                   <td className="p-3">
-  {user.createdAt
-    ? new Date(user.createdAt).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      })
-    : "N/A"}
-</td>
-                  </tr>
-                );
-              })}
+              {users.map((user, index) => (
+                <tr key={user.uid || user.id || index} className="border-b hover:bg-gray-50">
+                  <td className="p-3 text-gray-800">
+                    {user.name || user.displayName || "N/A"}
+                  </td>
+                  <td className="p-3 text-gray-800">
+                    {user.email || "N/A"}
+                  </td>
+                  <td className="p-3 text-gray-800">
+                    {getFormattedDate(user.createdAt)}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
