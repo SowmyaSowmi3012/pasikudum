@@ -6,8 +6,9 @@ import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables);
 
+const BASE_URL = "https://pasikudum-backend.onrender.com"; // 🔁 Update this if needed
+
 const AnalyticsPage = () => {
-  /* ───────────────────────────── state ───────────────────────────── */
   const [counts, setCounts] = useState({
     users: 0,
     recipes: 0,
@@ -16,44 +17,51 @@ const AnalyticsPage = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  /* ─────────────────────── fetch all four counts ─────────────────── */
   useEffect(() => {
-  const fetchCounts = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:5000/api/admin/analytics");
-      setCounts({
-        users: data.users,
-        recipes: data.recipes,
-        saved: data.saved,
-        submitted: data.submitted,
-      });
-    } catch (err) {
-      console.error("🔴 Analytics fetch failed:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchCounts = async () => {
+      try {
+        const { data } = await axios.get(`${BASE_URL}/api/admin/analytics`);
+        setCounts({
+          users: data.users || 0,
+          recipes: data.recipes || 0,
+          saved: data.saved || 0,
+          submitted: data.submitted || 0,
+        });
+      } catch (err) {
+        console.error("🔴 Analytics fetch failed:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchCounts();
-}, []);
-  /* ─────────────────────── chart config helper ───────────────────── */
-  const makeChartData = () => ({
+    fetchCounts();
+  }, []);
+
+  const chartData = {
     labels: ["Users", "Recipes", "Saved", "Submitted"],
     datasets: [
       {
         label: "Counts",
-        data: [
-          counts.users,
-          counts.recipes,
-          counts.saved,
-          counts.submitted,
-        ],
+        data: [counts.users, counts.recipes, counts.saved, counts.submitted],
         backgroundColor: ["#f87171", "#34d399", "#60a5fa", "#fbbf24"],
+        borderRadius: 8,
       },
     ],
-  });
+  };
 
-  /* ───────────────────────────── render ──────────────────────────── */
+  const chartOptions = {
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: { precision: 0 },
+      },
+    },
+  };
+
   if (loading) {
     return (
       <div className="p-8">
@@ -70,12 +78,12 @@ const AnalyticsPage = () => {
       <div className="grid md:grid-cols-2 gap-10">
         {/* Bar chart */}
         <div className="bg-white p-6 rounded shadow">
-          <Bar data={makeChartData()} />
+          <Bar data={chartData} options={chartOptions} />
         </div>
 
         {/* Doughnut chart */}
         <div className="bg-white p-6 rounded shadow">
-          <Doughnut data={makeChartData()} />
+          <Doughnut data={chartData} />
         </div>
       </div>
     </div>
