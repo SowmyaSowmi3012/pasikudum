@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Card from "../../components/Card";
 
+// ✅ define at top
+const BASE_URL = "https://pasikudum-backend.onrender.com";
+
 const CategoryPage = () => {
   const { category } = useParams();
   const [items, setItems] = useState([]);
@@ -12,7 +15,7 @@ const CategoryPage = () => {
   useEffect(() => {
     const fetchCategoryData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/categories/${category}`);
+        const response = await axios.get(`${BASE_URL}/api/categories/${category}`);
         setItems(response.data);
       } catch (err) {
         setError("Failed to load data.");
