@@ -10,6 +10,8 @@ const Recipes = () => {
   const [savedIds, setSavedIds] = useState([]); // array of recipeId strings
   const [user, setUser] = useState(null);
 
+  const BASE_URL = "https://pasikudum-backend.onrender.com";
+
   /* ───────────────────────────────
      Listen to Firebase login state
   ─────────────────────────────── */
@@ -23,7 +25,7 @@ const Recipes = () => {
   ─────────────────────────────── */
   useEffect(() => {
     const fetchAll = async () => {
-      const res = await axios.get("http://localhost:5000/api/all-items");
+      const res = await axios.get(`${BASE_URL}/api/all-items`);
       setItems(res.data);
     };
     fetchAll();
@@ -35,9 +37,7 @@ const Recipes = () => {
   useEffect(() => {
     if (!user) return setSavedIds([]);
     const fetchSaved = async () => {
-      const res = await axios.get(
-        `http://localhost:5000/api/saved?uid=${user.uid}`
-      );
+      const res = await axios.get(`${BASE_URL}/api/saved?uid=${user.uid}`);
       setSavedIds(res.data.map((r) => r.recipeId)); // array of IDs
     };
     fetchSaved();
@@ -57,15 +57,15 @@ const Recipes = () => {
     if (alreadySaved) {
       // unsave (DELETE)
       const savedEntry = await axios.get(
-        `/api/saved?uid=${user.uid}&recipeId=${recipe._id}`
-      ); // optional endpoint to obtain saved _id
+        `${BASE_URL}/api/saved?uid=${user.uid}&recipeId=${recipe._id}`
+      );
       if (savedEntry.data[0]) {
-        await axios.delete(`/api/saved/${savedEntry.data[0]._id}`);
+        await axios.delete(`${BASE_URL}/api/saved/${savedEntry.data[0]._id}`);
       }
       setSavedIds((prev) => prev.filter((id) => id !== recipe._id));
     } else {
       // save (POST)
-      await axios.post("http://localhost:5000/api/saved", {
+      await axios.post(`${BASE_URL}/api/saved`, {
         uid: user.uid,
         recipeId: recipe._id,
         title: recipe.name,
